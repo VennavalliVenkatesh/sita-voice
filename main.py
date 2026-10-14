@@ -35,6 +35,7 @@ def health_check():
     return {
         "status": "healthy",
         "service": "indicxlit-transliteration",
+        "version": "1ec67a1-v2",
         "loaded_languages": list(engines.keys())
     }
 

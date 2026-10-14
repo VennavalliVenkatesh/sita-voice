@@ -36,7 +36,7 @@ class BaseEngineTransformer(ABC):
     def tgt_langs(self):
         pass
 
-    def __init__(self, models_path, beam_width, rescore):
+    def __init__(self, models_path, beam_width, rescore, lang_list_file=None):
         # added by yash
 
         print("Initializing Multilingual model for transliteration")
@@ -45,13 +45,22 @@ class BaseEngineTransformer(ABC):
         else:
             lang_pairs_csv = ','.join(["en-"+lang for lang in self.all_supported_langs])
 
+        if lang_list_file is None or not os.path.isfile(lang_list_file):
+            candidate = os.path.join(models_path, LANG_LIST_FILE)
+            if os.path.isfile(candidate):
+                lang_list_file = candidate
+            else:
+                this_dir = os.path.dirname(os.path.realpath(__file__))
+                sub = 'indic2en' if 'en' in self.tgt_langs else 'en2indic'
+                lang_list_file = os.path.join(this_dir, 'models', sub, 'lang_list.txt')
+
         # initialize the model
         from .custom_interactive import Transliterator
         self.transliterator = Transliterator(
             os.path.join(models_path, CHARS_FOLDER),
             os.path.join(models_path, MODEL_FILE),
             lang_pairs_csv = lang_pairs_csv,
-            lang_list_file = os.path.join(models_path, LANG_LIST_FILE),
+            lang_list_file = lang_list_file,
             beam = beam_width, batch_size = 32,
         )
         

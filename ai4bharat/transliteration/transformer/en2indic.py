@@ -45,6 +45,17 @@ class XlitEngineTransformer_En2Indic(BaseEngineTransformer):
         os.makedirs(models_path, exist_ok=True)
 
         lang_list_file = os.path.join(models_path, LANG_LIST_FILE)
+        if not os.path.isfile(lang_list_file):
+            bundled_lang_list = os.path.join(F_DIR, 'models', 'en2indic', 'lang_list.txt')
+            if os.path.isfile(bundled_lang_list):
+                try:
+                    import shutil
+                    os.makedirs(os.path.dirname(lang_list_file), exist_ok=True)
+                    shutil.copyfile(bundled_lang_list, lang_list_file)
+                except Exception:
+                    lang_list_file = bundled_lang_list
+            else:
+                lang_list_file = bundled_lang_list
         _all_supported_langs = open(lang_list_file).read().strip().split('\n')
         self._all_supported_langs = set(_all_supported_langs)
         if "en" in self._all_supported_langs:
@@ -75,7 +86,7 @@ class XlitEngineTransformer_En2Indic(BaseEngineTransformer):
         else:
             dicts_folder = None
         
-        super().__init__(models_path, beam_width=beam_width, rescore=rescore)
+        super().__init__(models_path, beam_width=beam_width, rescore=rescore, lang_list_file=lang_list_file)
     
     @property
     def all_supported_langs(self):

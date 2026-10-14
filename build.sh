@@ -13,4 +13,13 @@ pip install fairseq-fixed
 echo "=== Installing remaining requirements ==="
 pip install -r requirements.txt
 
+echo "=== Pre-seeding IndicXlit model directories and manifests ==="
+mkdir -p ai4bharat/transliteration/transformer/models/en2indic/v1.0
+mkdir -p ai4bharat/transliteration/transformer/models/indic2en/v1.0
+mkdir -p /opt/render/project/src/ai4bharat/transliteration/transformer/models/en2indic/v1.0 || true
+mkdir -p /opt/render/project/src/ai4bharat/transliteration/transformer/models/indic2en/v1.0 || true
+
+cp ai4bharat/transliteration/transformer/models/en2indic/lang_list.txt ai4bharat/transliteration/transformer/models/en2indic/v1.0/../lang_list.txt || true
+cp ai4bharat/transliteration/transformer/models/indic2en/lang_list.txt ai4bharat/transliteration/transformer/models/indic2en/v1.0/../lang_list.txt || true
+
 echo "=== Build Complete ==="

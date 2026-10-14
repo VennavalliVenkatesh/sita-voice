@@ -1,0 +1,14 @@
+# SITA IndicXlit Service Dependencies
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.2
+torch>=2.0.0
+fairseq==0.12.2
+indic-nlp-library>=0.92
+urduhack>=1.1.1
+pydload>=1.0.9
+sacremoses>=0.0.53
+pandas>=2.0.0
+tqdm>=4.65.0
+ujson>=5.7.0
+requests>=2.31.0

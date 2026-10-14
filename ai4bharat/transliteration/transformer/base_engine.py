@@ -6,7 +6,11 @@ from pydload import dload
 import zipfile
 from abc import ABC, abstractmethod, abstractproperty
 from indicnlp.normalize.indic_normalize import IndicNormalizerFactory
-from urduhack import normalize as shahmukhi_normalize
+try:
+    from urduhack import normalize as shahmukhi_normalize
+except Exception:
+    def shahmukhi_normalize(w):
+        return w
 
 from ..utils import *
 LANG_WORD_REGEXES = {

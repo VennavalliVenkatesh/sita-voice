@@ -44,8 +44,16 @@ class TranslitRequest(BaseModel):
 
 @app.on_event("startup")
 def load_model():
-    # Lazy loading is used per language on demand
     logger.info("SITA IndicXlit Service starting up...")
+    try:
+        from ai4bharat.transliteration import XlitEngine
+        logger.info("Pre-warming XlitEngine for 'te' (Telugu)...")
+        engines["te"] = XlitEngine("te", beam_width=4, rescore=False)
+        # Warm run
+        _ = engines["te"].translit_sentence("test")
+        logger.info("XlitEngine for 'te' pre-warmed successfully!")
+    except Exception as e:
+        logger.warning(f"Startup pre-warming for 'te' encountered: {e}")
 
 @app.get("/health")
 def health_check():

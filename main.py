@@ -48,9 +48,9 @@ def load_model():
     try:
         from ai4bharat.transliteration import XlitEngine
         logger.info("Pre-warming XlitEngine (RNN lightweight) for 'te' (Telugu)...")
-        engines["te"] = XlitEngine("te", beam_width=4, rescore=False, model_type="rnn")
+        engines["te"] = XlitEngine("te", beam_width=1, rescore=False, model_type="rnn")
         # Warm run
-        _ = engines["te"].translit_sentence("test")
+        _ = engines["te"].translit_sentence("test", lang_code="te")
         logger.info("XlitEngine for 'te' pre-warmed successfully!")
     except Exception as e:
         logger.warning(f"Startup pre-warming for 'te' encountered: {e}")
@@ -88,7 +88,7 @@ def transliterate(request: TranslitRequest):
                 
             from ai4bharat.transliteration import XlitEngine
             logger.info(f"Initializing lightweight RNN XlitEngine for '{lang}'...")
-            engines[lang] = XlitEngine(lang, beam_width=4, rescore=False, model_type="rnn")
+            engines[lang] = XlitEngine(lang, beam_width=1, rescore=False, model_type="rnn")
             logger.info(f"XlitEngine for '{lang}' loaded successfully.")
         except Exception as e:
             logger.error(f"Failed to load XlitEngine for '{lang}': {e}", exc_info=True)

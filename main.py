@@ -73,8 +73,8 @@ def transliterate(request: TranslitRequest):
         try:
             from ai4bharat.transliteration import XlitEngine
             logger.info(f"Initializing XlitEngine for '{lang}'...")
-            # Initialize with beam_width=4 and rescore=True matching production configuration
-            engines[lang] = XlitEngine(lang, beam_width=4, rescore=True)
+            # Initialize with beam_width=4 and rescore=False to avoid downloading 850MB dictionary and OOM crashes
+            engines[lang] = XlitEngine(lang, beam_width=4, rescore=False)
             logger.info(f"XlitEngine for '{lang}' loaded successfully.")
         except Exception as e:
             logger.error(f"Failed to load XlitEngine for '{lang}': {e}", exc_info=True)

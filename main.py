@@ -4,6 +4,23 @@ from pydantic import BaseModel
 import time
 import logging
 import os
+import argparse
+import torch
+
+# PyTorch 2.6 compatibility: allow argparse.Namespace and ensure legacy fairseq checkpoints can load safely
+if hasattr(torch.serialization, "add_safe_globals"):
+    try:
+        torch.serialization.add_safe_globals([argparse.Namespace])
+    except Exception as e:
+        pass
+
+# Ensure torch.load fallback for fairseq checkpoints requiring weights_only=False
+_orig_torch_load = torch.load
+def _compat_torch_load(*args, **kwargs):
+    if "weights_only" not in kwargs:
+        kwargs["weights_only"] = False
+    return _orig_torch_load(*args, **kwargs)
+torch.load = _compat_torch_load
 
 app = FastAPI(title="SITA IndicXlit Transliteration Service")
 

@@ -91,9 +91,12 @@ def transliterate(request: TranslitRequest):
         
     start_time = time.time()
     try:
-        result = engine.translit_sentence(text)
+        # Pass explicit lang_code to avoid computing all default languages
+        result = engine.translit_sentence(text, lang_code=lang)
         
-        if isinstance(result, list) or isinstance(result, tuple):
+        if isinstance(result, dict):
+            out_text = result.get(lang, str(result))
+        elif isinstance(result, list) or isinstance(result, tuple):
             out_text = result[0]
         else:
             out_text = str(result)

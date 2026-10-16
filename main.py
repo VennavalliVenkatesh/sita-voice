@@ -47,7 +47,8 @@ def transliterate(request: TranslitRequest):
     if not text:
         raise HTTPException(status_code=400, detail="Text cannot be empty or whitespace only.")
         
-    valid_langs = {"hi", "te", "kn", "or"}
+    # Supported Indic languages matching UI dropdown
+    valid_langs = {"te", "hi", "ta", "kn", "ml", "bn", "mr", "gu", "as", "or"}
     if lang not in valid_langs:
         raise HTTPException(status_code=400, detail=f"Language code '{lang}' is not supported. Supported languages: {sorted(list(valid_langs))}")
         

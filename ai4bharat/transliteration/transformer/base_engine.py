@@ -40,10 +40,12 @@ class BaseEngineTransformer(ABC):
         # added by yash
 
         print("Initializing Multilingual model for transliteration")
+        # Load only the requested language pair rather than all 22 languages to stay within memory limits
+        active_langs = list(self.tgt_langs) if 'en' not in self.tgt_langs else list(self.all_supported_langs)
         if 'en' in self.tgt_langs:
-            lang_pairs_csv = ','.join([lang+"-en" for lang in self.all_supported_langs])
+            lang_pairs_csv = ','.join([lang+"-en" for lang in active_langs])
         else:
-            lang_pairs_csv = ','.join(["en-"+lang for lang in self.all_supported_langs])
+            lang_pairs_csv = ','.join(["en-"+lang for lang in active_langs])
 
         sub = 'indic2en' if 'en' in self.tgt_langs else 'en2indic'
         this_dir = os.path.dirname(os.path.realpath(__file__))

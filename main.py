@@ -79,6 +79,13 @@ def transliterate(request: TranslitRequest):
         
     if lang not in engines:
         try:
+            # Memory safety on 512MB tier: evict previous model before loading new one
+            import gc
+            engines.clear()
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                
             from ai4bharat.transliteration import XlitEngine
             logger.info(f"Initializing lightweight RNN XlitEngine for '{lang}'...")
             engines[lang] = XlitEngine(lang, beam_width=4, rescore=False, model_type="rnn")

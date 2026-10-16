@@ -45,14 +45,28 @@ class BaseEngineTransformer(ABC):
         else:
             lang_pairs_csv = ','.join(["en-"+lang for lang in self.all_supported_langs])
 
+        sub = 'indic2en' if 'en' in self.tgt_langs else 'en2indic'
+        this_dir = os.path.dirname(os.path.realpath(__file__))
+        canonical_bundled = os.path.join(this_dir, 'models', sub, 'lang_list.txt')
+        target_lang_list = os.path.join(models_path, 'lang_list.txt')
+
         if lang_list_file is None or not os.path.isfile(lang_list_file):
-            candidate = os.path.join(models_path, LANG_LIST_FILE)
-            if os.path.isfile(candidate):
-                lang_list_file = candidate
-            else:
-                this_dir = os.path.dirname(os.path.realpath(__file__))
-                sub = 'indic2en' if 'en' in self.tgt_langs else 'en2indic'
-                lang_list_file = os.path.join(this_dir, 'models', sub, 'lang_list.txt')
+            for candidate in [target_lang_list, canonical_bundled, os.path.join(models_path, LANG_LIST_FILE)]:
+                if os.path.isfile(candidate):
+                    lang_list_file = candidate
+                    break
+
+        if lang_list_file is None or not os.path.isfile(lang_list_file):
+            default_langs = "en\nas\nbn\nbrx\ngom\ngu\nhi\nkn\nks\nmai\nml\nmni\nmr\nne\nor\npa\nsa\nsd\nsi\nta\nte\nur\n"
+            for target_path in [target_lang_list, canonical_bundled]:
+                try:
+                    os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                    with open(target_path, 'w', encoding='utf-8') as f:
+                        f.write(default_langs)
+                    lang_list_file = target_path
+                    break
+                except Exception:
+                    continue
 
         # initialize the model
         from .custom_interactive import Transliterator

@@ -44,19 +44,33 @@ class XlitEngineTransformer_En2Indic(BaseEngineTransformer):
         models_path = os.path.join(models_path, "en2indic", XLIT_VERSION)
         os.makedirs(models_path, exist_ok=True)
 
-        lang_list_file = os.path.join(models_path, LANG_LIST_FILE)
-        if not os.path.isfile(lang_list_file):
-            bundled_lang_list = os.path.join(F_DIR, 'models', 'en2indic', 'lang_list.txt')
-            if os.path.isfile(bundled_lang_list):
+        canonical_bundled = os.path.join(F_DIR, 'models', 'en2indic', 'lang_list.txt')
+        target_lang_list = os.path.join(models_path, 'lang_list.txt')
+
+        # Find best existing lang_list file or create it
+        lang_list_file = None
+        for candidate in [target_lang_list, canonical_bundled, os.path.join(models_path, LANG_LIST_FILE)]:
+            if os.path.isfile(candidate):
+                lang_list_file = candidate
+                break
+
+        if lang_list_file is None:
+            # Create the file in models_path and parent directory if missing
+            default_langs = "en\nas\nbn\nbrx\ngom\ngu\nhi\nkn\nks\nmai\nml\nmni\nmr\nne\nor\npa\nsa\nsd\nsi\nta\nte\nur\n"
+            for target_path in [target_lang_list, canonical_bundled]:
                 try:
-                    import shutil
-                    os.makedirs(os.path.dirname(lang_list_file), exist_ok=True)
-                    shutil.copyfile(bundled_lang_list, lang_list_file)
+                    os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                    with open(target_path, 'w', encoding='utf-8') as f:
+                        f.write(default_langs)
+                    lang_list_file = target_path
+                    break
                 except Exception:
-                    lang_list_file = bundled_lang_list
-            else:
-                lang_list_file = bundled_lang_list
-        _all_supported_langs = open(lang_list_file).read().strip().split('\n')
+                    continue
+
+        if lang_list_file and os.path.isfile(lang_list_file):
+            _all_supported_langs = open(lang_list_file, encoding='utf-8').read().strip().split('\n')
+        else:
+            _all_supported_langs = ["en", "as", "bn", "brx", "gom", "gu", "hi", "kn", "ks", "mai", "ml", "mni", "mr", "ne", "or", "pa", "sa", "sd", "si", "ta", "te", "ur"]
         self._all_supported_langs = set(_all_supported_langs)
         if "en" in self._all_supported_langs:
             self._all_supported_langs.remove("en")

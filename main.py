@@ -47,8 +47,8 @@ def load_model():
     logger.info("SITA IndicXlit Service starting up...")
     try:
         from ai4bharat.transliteration import XlitEngine
-        logger.info("Pre-warming XlitEngine for 'te' (Telugu)...")
-        engines["te"] = XlitEngine("te", beam_width=4, rescore=False)
+        logger.info("Pre-warming XlitEngine (RNN lightweight) for 'te' (Telugu)...")
+        engines["te"] = XlitEngine("te", beam_width=4, rescore=False, model_type="rnn")
         # Warm run
         _ = engines["te"].translit_sentence("test")
         logger.info("XlitEngine for 'te' pre-warmed successfully!")
@@ -80,9 +80,8 @@ def transliterate(request: TranslitRequest):
     if lang not in engines:
         try:
             from ai4bharat.transliteration import XlitEngine
-            logger.info(f"Initializing XlitEngine for '{lang}'...")
-            # Initialize with beam_width=4 and rescore=False to avoid downloading 850MB dictionary and OOM crashes
-            engines[lang] = XlitEngine(lang, beam_width=4, rescore=False)
+            logger.info(f"Initializing lightweight RNN XlitEngine for '{lang}'...")
+            engines[lang] = XlitEngine(lang, beam_width=4, rescore=False, model_type="rnn")
             logger.info(f"XlitEngine for '{lang}' loaded successfully.")
         except Exception as e:
             logger.error(f"Failed to load XlitEngine for '{lang}': {e}", exc_info=True)

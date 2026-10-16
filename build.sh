@@ -32,10 +32,16 @@ if [ ! -f "$TARGET_MODEL_DIR/transformer/indicxlit.pt" ]; then
     echo "=== Model pre-downloaded and unpacked successfully ==="
 fi
 
-# Ensure lang_list.txt is present in all target locations
-cp ai4bharat/transliteration/transformer/models/en2indic/lang_list.txt ai4bharat/transliteration/transformer/models/en2indic/v1.0/lang_list.txt || true
-cp ai4bharat/transliteration/transformer/models/indic2en/lang_list.txt ai4bharat/transliteration/transformer/models/indic2en/v1.0/lang_list.txt || true
-cp ai4bharat/transliteration/transformer/models/en2indic/lang_list.txt "$HOME/.AI4Bharat_Xlit_Models/en2indic/lang_list.txt" || true
-cp ai4bharat/transliteration/transformer/models/en2indic/lang_list.txt "$HOME/.AI4Bharat_Xlit_Models/en2indic/v1.0/lang_list.txt" || true
+# Pre-download lightweight RNN models for instant startup
+RNN_DIR="ai4bharat/transliteration/rnn/models/v0.5"
+mkdir -p "$RNN_DIR"
+for l in telugu hindi; do
+    if [ ! -d "$RNN_DIR/$l" ]; then
+        echo "=== Pre-downloading RNN model for $l ==="
+        curl -L "https://github.com/AI4Bharat/IndianNLP-Transliteration/releases/download/xlit_v0.5.0/$l.zip" -o "/tmp/$l.zip"
+        unzip -q "/tmp/$l.zip" -d "$RNN_DIR"
+        rm -f "/tmp/$l.zip"
+    fi
+done
 
 echo "=== Build Complete ==="
